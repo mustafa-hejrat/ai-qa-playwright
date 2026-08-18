@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test';
 
-////valid user name and password login
 
 test('valid user can log in successfully', async ({ page }) => {
   await page.goto('https://www.saucedemo.com/');
@@ -13,7 +12,6 @@ test('valid user can log in successfully', async ({ page }) => {
   await expect(page.getByText('Products')).toBeVisible();
 });
 
-////invalid user name and password login
 
 test('user cannot log in with an invalid password', async ({ page }) => {
   await page.goto('https://www.saucedemo.com/');
@@ -28,7 +26,6 @@ test('user cannot log in with an invalid password', async ({ page }) => {
   ).toBeVisible();
 });
 
-////Product/Catalog Testing
 
 test('user can view the product catalog', async ({ page }) => {
   await page.goto('https://www.saucedemo.com/');
@@ -48,9 +45,7 @@ test('user can view the product catalog', async ({ page }) => {
   await expect(page.getByText('$29.99')).toBeVisible();
 });
 
-////cart testing
 
-  
 test('user can add the product to the cart', async ({ page }) => {
   await page.goto('https://www.saucedemo.com');
 

@@ -1,16 +1,19 @@
 import { test, expect } from '@playwright/test';
 
-//GET existing user
+// GET existing user
 test('GET user successfully', async ({ request }) => {
   const response = await request.get('https://jsonplaceholder.typicode.com/users/1');
 
   expect(response.status()).toBe(200);
+  expect(response.headers()['content-type']).toContain('application/json');
 
   const user = await response.json();
 
   expect(user.id).toBe(1);
   expect(user.name).toBeTruthy();
+  expect(typeof user.name).toBe('string');
   expect(user.email).toBeTruthy();
+  expect(user.email).toContain('@');
 });
 
 //GET non-existing user
@@ -18,6 +21,8 @@ test('GET non-existing user returns 404', async ({ request }) => {
   const response = await request.get('https://jsonplaceholder.typicode.com/users/999');
 
   expect(response.status()).toBe(404);
+  const body = await response.json();
+  expect(body).toEqual({});
 });
 
 //POST create user
@@ -31,9 +36,18 @@ test('POST create a new user', async ({ request }) => {
   });
 
   expect(response.status()).toBe(201);
-
+  expect(response.headers()['content-type']).toContain('application/json');
   const user = await response.json();
+  expect(user).toHaveProperty('id');
+  expect(user).toHaveProperty('name');
+  expect(user).toHaveProperty('username');
+  expect(user).toHaveProperty('email');
 
+  expect(typeof user.id).toBe('number');
+  expect(typeof user.name).toBe('string');
+  expect(typeof user.username).toBe('string');
+  expect(typeof user.email).toBe('string');
+  expect(user.id).toBeTruthy();
   expect(user.name).toBe('Mustafa Hejrat');
   expect(user.username).toBe('mustafa');
   expect(user.email).toBe('mustafa@example.com');
@@ -48,11 +62,25 @@ test('PUT update an existing user', async ({ request }) => {
       email: 'mustafa.new@example.com'
     }
   });
-
+ // Status code
   expect(response.status()).toBe(200);
+ // Response header
+  expect(response.headers()['content-type']).toContain('application/json');
 
   const user = await response.json();
-
+ // Response structure
+  expect(user).toHaveProperty('id');
+  expect(user).toHaveProperty('name');
+  expect(user).toHaveProperty('username');
+  expect(user).toHaveProperty('email');
+  expect(typeof user.id).toBe('number');
+  expect(typeof user.name).toBe('string');
+  expect(typeof user.username).toBe('string');
+  expect(typeof user.email).toBe('string');
+ // Response data
+  expect(user.name).toBe('Mustafa Hejrat');
+  expect(user.username).toBe('mustafa');
+  expect(user.email).toBe('mustafa.new@example.com'); 
   expect(user.name).toBe('Mustafa Hejrat');
   expect(user.username).toBe('mustafa');
   expect(user.email).toBe('mustafa.new@example.com');

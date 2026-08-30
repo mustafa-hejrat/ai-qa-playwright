@@ -12,8 +12,7 @@ test('GET user successfully', async ({ request }) => {
   expect(user.id).toBe(1);
   expect(user.name).toBeTruthy();
   expect(typeof user.name).toBe('string');
-  expect(user.email).toBeTruthy();
-  expect(user.email).toContain('@');
+  expect(user.email).toMatch(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
 });
 
 //GET non-existing user
@@ -47,6 +46,7 @@ test('POST create a new user', async ({ request }) => {
   expect(typeof user.name).toBe('string');
   expect(typeof user.username).toBe('string');
   expect(typeof user.email).toBe('string');
+  
   expect(user.id).toBeTruthy();
   expect(user.name).toBe('Mustafa Hejrat');
   expect(user.username).toBe('mustafa');
@@ -81,9 +81,7 @@ test('PUT update an existing user', async ({ request }) => {
   expect(user.name).toBe('Mustafa Hejrat');
   expect(user.username).toBe('mustafa');
   expect(user.email).toBe('mustafa.new@example.com'); 
-  expect(user.name).toBe('Mustafa Hejrat');
-  expect(user.username).toBe('mustafa');
-  expect(user.email).toBe('mustafa.new@example.com');
+  
 });
 
 //DELETE user
@@ -91,4 +89,56 @@ test('DELETE an existing user', async ({ request }) => {
   const response = await request.delete('https://jsonplaceholder.typicode.com/users/1');
 
   expect(response.status()).toBe(200);
+});
+
+// POST with missing data
+test('POST create user with missing data', async ({ request }) => {
+  const response = await request.post(
+    'https://jsonplaceholder.typicode.com/users',
+    {
+      data: {}
+    }
+  );
+
+  expect(response.status()).toBe(201);
+
+  expect(response.headers()['content-type']).toContain('application/json');
+
+  const body = await response.json();
+
+  expect(body).toHaveProperty('id');
+  expect(typeof body.id).toBe('number');
+  expect(body.id).toBeTruthy();
+});
+
+// POST with invalid email
+test('POST create user with invalid email', async ({ request }) => {
+  const response = await request.post(
+    'https://jsonplaceholder.typicode.com/users',
+    {
+      data: {
+        name: 'Mustafa Hejrat',
+        username: 'mustafa',
+        email: 'mustafa-invalid-email'
+      }
+    }
+  );
+
+  expect(response.status()).toBe(201);
+
+  expect(response.headers()['content-type']).toContain('application/json');
+
+  const body = await response.json();
+
+  expect(body).toHaveProperty('id');
+  expect(body).toHaveProperty('name');
+  expect(body).toHaveProperty('username');
+  expect(body).toHaveProperty('email');
+
+  expect(typeof body.id).toBe('number');
+  expect(body.id).toBeTruthy();
+
+  expect(body.name).toBe('Mustafa Hejrat');
+  expect(body.username).toBe('mustafa');
+  expect(body.email).toBe('mustafa-invalid-email');
 });

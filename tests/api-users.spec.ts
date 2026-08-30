@@ -142,3 +142,63 @@ test('POST create user with invalid email', async ({ request }) => {
   expect(body.username).toBe('mustafa');
   expect(body.email).toBe('mustafa-invalid-email');
 });
+
+// PUT with invalid data
+test('PUT update user with invalid data', async ({ request }) => {
+  const response = await request.put(
+    'https://jsonplaceholder.typicode.com/users/1',
+    {
+      data: {
+        name: '',
+        username: '',
+        email: 'invalid-email'
+      }
+    }
+  );
+
+  expect(response.status()).toBe(200);
+
+  expect(response.headers()['content-type']).toContain('application/json');
+
+  const body = await response.json();
+
+  expect(body).toHaveProperty('id');
+  expect(body).toHaveProperty('name');
+  expect(body).toHaveProperty('username');
+  expect(body).toHaveProperty('email');
+
+  expect(typeof body.id).toBe('number');
+  expect(typeof body.name).toBe('string');
+  expect(typeof body.username).toBe('string');
+  expect(typeof body.email).toBe('string');
+
+  expect(body.id).toBe(1);
+  expect(body.name).toBe('');
+  expect(body.username).toBe('');
+  expect(body.email).toBe('invalid-email');
+});
+
+// DELETE non-existing user
+test('DELETE non-existing user', async ({ request }) => {
+  const response = await request.delete(
+    'https://jsonplaceholder.typicode.com/users/999'
+  );
+
+  console.log('Status:', response.status());
+
+  const body = await response.json();
+
+  console.log('Response:', body);
+});
+
+// DELETE non-existing user
+test('DELETE non-existing user returns 200 for JSONPlaceholder', async ({ request }) => {
+  const response = await request.delete(
+    'https://jsonplaceholder.typicode.com/users/999'
+  );
+
+  expect(response.status()).toBe(200);
+
+  const body = await response.json();
+  expect(body).toEqual({});
+});

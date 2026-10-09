@@ -1,6 +1,7 @@
+
 import { test, expect } from '@playwright/test';
 
-test('Create a user and then get the user', async ({ request }) => {
+test('Create a user and get an existing user', async ({ request }) => {
 
   // Step 1: Create a new user
   const createResponse = await request.post(
@@ -14,37 +15,36 @@ test('Create a user and then get the user', async ({ request }) => {
     }
   );
 
-  // Verify POST response
   expect(createResponse.status()).toBe(201);
 
   const createdUser = await createResponse.json();
 
-  // Get the ID created by the API
-  const userId = createdUser.id;
+  // Verify the simulated created user
+  expect(createdUser.id).toBeTruthy();
+  expect(createdUser.name).toBe('Mustafa Hejrat');
+  expect(createdUser.username).toBe('mustafa');
+  expect(createdUser.email).toBe('mustafa@example.com');
 
-  expect(userId).toBeTruthy();
+  console.log('Created User:', createdUser);
 
-  console.log('Created User ID:', userId);
-
-
-  // Step 2: Get the created user
+  // Step 2: Get an existing user
   const getResponse = await request.get(
-  'https://jsonplaceholder.typicode.com/users/1'
-);
+    'https://jsonplaceholder.typicode.com/users/1'
+  );
 
-  // Verify GET response
   expect(getResponse.status()).toBe(200);
 
   const user = await getResponse.json();
 
-  console.log('User:', user);
-
+  // Verify the existing user's data
   expect(user.id).toBe(1);
+  expect(user.name).toBe('Leanne Graham');
+
+  console.log('Retrieved User:', user);
 });
 
 test('Update an existing user', async ({ request }) => {
 
-  // Step 1: Update user 1
   const updateResponse = await request.put(
     'https://jsonplaceholder.typicode.com/users/1',
     {
@@ -56,13 +56,10 @@ test('Update an existing user', async ({ request }) => {
     }
   );
 
-  // Verify status code
   expect(updateResponse.status()).toBe(200);
 
-  // Get response body
   const updatedUser = await updateResponse.json();
 
-  // Verify updated data
   expect(updatedUser.id).toBe(1);
   expect(updatedUser.name).toBe('Mustafa Hejrat');
   expect(updatedUser.username).toBe('mustafa');
@@ -73,18 +70,14 @@ test('Update an existing user', async ({ request }) => {
 
 test('Delete an existing user', async ({ request }) => {
 
-  // Step 1: Delete user 1
   const deleteResponse = await request.delete(
     'https://jsonplaceholder.typicode.com/users/1'
   );
 
-  // Verify status code
   expect(deleteResponse.status()).toBe(200);
 
-  // Get response body
   const deleteBody = await deleteResponse.json();
 
-  // Verify response body
   expect(deleteBody).toEqual({});
 
   console.log('User deleted successfully');

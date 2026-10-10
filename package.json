@@ -1,10 +1,20 @@
+
 {
   "name": "ai-qa-playwright",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {},
-  "keywords": [],
+  "description": "QA automation portfolio using Playwright",
+  "scripts": {
+    "test": "playwright test --workers=1",
+    "test:headed": "playwright test --headed",
+    "test:report": "playwright show-report"
+  },
+  "keywords": [
+    "qa",
+    "software-testing",
+    "playwright",
+    "automation-testing",
+    "api-testing"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
